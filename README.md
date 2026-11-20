@@ -68,3 +68,7 @@ All settings are in `config.js` under `window.AD_CONFIG`:
 - `SUPPORT_BUTTON` — a voluntary "Support the game" button in the mission card.
 - `SUPPORT_REWARD_XP` — bonus XP for pressing that button. Default 0. Many ad networks forbid rewarding clicks, so check your network's rules before setting this above 0.
 - `ENABLED: false` turns every ad off.
+
+## 8. Fight screen v2
+- `fx.js` = canvas fight engine (6 punch/kick moves, special blast, hit sparks, screen shake, KO) + music & sound effects, all generated in code (no audio files needed). Music/SFX buttons are in the arena corner and top bar.
+- On a fight start the arena locks to the top of the screen and the paragraph sits directly below it, so the keyboard never hides the fight. You type straight into the paragraph (green = correct, red = wrong).

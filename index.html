@@ -14,7 +14,8 @@
       <a class="brand" href="#"><span class="brand-mark">⚔</span><span>TYPE<span class="accent">CLASH</span></span></a>
       <div class="top-actions">
         <span id="user-label" class="user-label">Guest fighter</span>
-        <button id="sound-toggle" class="icon-btn" aria-label="Toggle sound">🔊</button>
+        <button class="icon-btn mus-btn" aria-label="Toggle music">🎵</button>
+        <button class="icon-btn snd-btn" aria-label="Toggle sound">🔊</button>
         <button id="auth-open" class="small-btn">Sign in</button>
       </div>
     </header>
@@ -42,10 +43,11 @@
           <div class="battle-card">
             <div class="arena-heading"><div><p class="eyebrow">CURRENT MATCH</p><h2 id="stage-title">Training Grounds</h2></div><span id="stage-badge" class="stage-badge">STAGE 01</span></div>
             <div class="battlefield">
-              <div class="fighter fighter-player" id="player-fighter"><div class="fighter-name">YOU</div><div class="stickman"><i class="head"></i><i class="body"></i><i class="arm a1"></i><i class="arm a2"></i><i class="leg l1"></i><i class="leg l2"></i><i class="weapon"></i></div><div class="health"><span id="player-health"></span></div></div>
-              <div class="vs">VS</div>
-              <div class="fighter fighter-enemy" id="enemy-fighter"><div class="fighter-name" id="enemy-name">TRAINING BOT</div><div class="stickman enemy-stick"><i class="head"></i><i class="body"></i><i class="arm a1"></i><i class="arm a2"></i><i class="leg l1"></i><i class="leg l2"></i></div><div class="health"><span id="enemy-health"></span></div></div>
+              <canvas id="arena"></canvas>
+              <div class="hud"><div class="hud-side"><span>YOU</span><div class="health"><span id="player-health"></span></div></div><div class="hud-vs">VS</div><div class="hud-side right"><span id="enemy-name">TRAINING BOT</span><div class="health"><span id="enemy-health"></span></div></div></div>
+              <div class="hud-btns"><button class="icon-btn snd-btn" aria-label="Toggle sound">🔊</button><button class="icon-btn mus-btn" aria-label="Toggle music">🎵</button></div>
               <div id="impact-text" class="impact-text"></div>
+              <div id="result" class="result hidden"><h2 id="result-title"></h2><p id="result-sub"></p><div class="result-btns"><button id="result-btn" class="primary-btn"></button><button id="exit-btn" class="small-btn">EXIT</button></div></div>
             </div>
             <div class="battle-stats"><div><span>YOUR WPM</span><b id="wpm">0</b></div><div><span>ACCURACY</span><b id="accuracy">100%</b></div><div><span>COMBO</span><b id="combo">0×</b></div><div><span>TIME</span><b id="timer">00:00</b></div></div>
           </div>
@@ -63,7 +65,7 @@
         <div class="typing-card">
           <div class="typing-head"><div><p class="eyebrow">TYPE TO ATTACK</p><h3>Combat text</h3></div><span class="hint-pill">💡 Accuracy matters!</span></div>
           <div id="prompt-text" class="prompt-text">Press <b>START FIGHT</b> to reveal your first challenge paragraph.</div>
-          <textarea id="typing-input" rows="3" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" placeholder="Your typing area will unlock when the fight begins..." disabled></textarea>
+          <textarea id="typing-input" rows="3" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" enterkeyhint="done" disabled></textarea>
           <div class="typing-footer"><span id="typing-progress">0 / 0 characters</span><span>Mobile tip: landscape mode gives you more room.</span></div>
         </div>
       </section>
@@ -87,6 +89,7 @@
   <div id="auth-modal" class="modal hidden"><div class="modal-card"><button id="auth-close" class="close-btn">×</button><p class="eyebrow">SAVE YOUR PROGRESS</p><h2>Join the arena</h2><p class="muted">Create an account to save your level, wins and leaderboard score across devices.</p>
     <form id="auth-form"><label>Email<input id="email" type="email" required placeholder="you@example.com"></label><label>Password<input id="password" type="password" minlength="6" required placeholder="At least 6 characters"></label><label>Fighter name<input id="display-name" maxlength="18" placeholder="Shadow Rookie"></label><div class="auth-buttons"><button type="submit" class="primary-btn" id="signup-btn">Create account</button><button type="button" id="login-btn" class="small-btn">I already have an account</button></div></form><p id="auth-message" class="status-message"></p><button id="signout-btn" class="text-btn hidden">Sign out</button></div></div>
   <script src="config.js"></script>
+  <script src="fx.js"></script>
   <script src="game.js"></script>
 </body>
 </html>
