@@ -2,8 +2,8 @@
 // Find both in Supabase Dashboard > Project Settings > API.
 // NEVER put a service_role key in this file.
 window.APP_CONFIG = {
-  SUPABASE_URL: "https://YOUR-PROJECT.supabase.co",
-  SUPABASE_ANON_KEY: "YOUR_SUPABASE_ANON_PUBLIC_KEY"
+  SUPABASE_URL: "https://caxauxtujgjaegtnlyvq.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable_C34247g6_HUTQ5f41hn9fw_lHn8Ym6_"
 };
 
 // ---------- ADS / MONETIZATION ----------
