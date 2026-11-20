@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#10131f" />
+  <title>TYPE CLASH — Typing Fighter</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#"><span class="brand-mark">⚔</span><span>TYPE<span class="accent">CLASH</span></span></a>
+      <div class="top-actions">
+        <span id="user-label" class="user-label">Guest fighter</span>
+        <button id="sound-toggle" class="icon-btn" aria-label="Toggle sound">🔊</button>
+        <button id="auth-open" class="small-btn">Sign in</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero-row">
+        <div><p class="eyebrow">TYPE FAST. FIGHT SMART.</p><h1>Every word is a <span class="accent">weapon.</span></h1><p class="sub">Train your typing. Master combos. Become the arena champion.</p></div>
+        <div class="profile-card">
+          <div class="profile-top"><span>FIGHTER PROFILE</span><span id="rank-name">ROOKIE</span></div>
+          <div class="profile-main"><div class="avatar-badge" id="profile-avatar">🥷</div><div><strong id="fighter-name">Shadow Rookie</strong><p>Level <b id="level">1</b> · <b id="xp">0</b> XP</p></div></div>
+          <div class="xp-track"><div id="xp-fill"></div></div>
+          <div class="profile-bottom"><span id="wins">0 wins</span><span id="best-wpm">Best: 0 WPM</span></div>
+        </div>
+      </section>
+
+      <nav class="tabs">
+        <button class="tab active" data-tab="arena">⚔ Arena</button>
+        <button class="tab" data-tab="fighters">🥷 Fighters</button>
+        <button class="tab" data-tab="achievements">🏆 Achievements</button>
+        <button class="tab" data-tab="leaderboard">📊 Leaderboard</button>
+      </nav>
+
+      <section id="arena-panel" class="panel active">
+        <div class="game-layout">
+          <div class="battle-card">
+            <div class="arena-heading"><div><p class="eyebrow">CURRENT MATCH</p><h2 id="stage-title">Training Grounds</h2></div><span id="stage-badge" class="stage-badge">STAGE 01</span></div>
+            <div class="battlefield">
+              <div class="fighter fighter-player" id="player-fighter"><div class="fighter-name">YOU</div><div class="stickman"><i class="head"></i><i class="body"></i><i class="arm a1"></i><i class="arm a2"></i><i class="leg l1"></i><i class="leg l2"></i><i class="weapon"></i></div><div class="health"><span id="player-health"></span></div></div>
+              <div class="vs">VS</div>
+              <div class="fighter fighter-enemy" id="enemy-fighter"><div class="fighter-name" id="enemy-name">TRAINING BOT</div><div class="stickman enemy-stick"><i class="head"></i><i class="body"></i><i class="arm a1"></i><i class="arm a2"></i><i class="leg l1"></i><i class="leg l2"></i></div><div class="health"><span id="enemy-health"></span></div></div>
+              <div id="impact-text" class="impact-text"></div>
+            </div>
+            <div class="battle-stats"><div><span>YOUR WPM</span><b id="wpm">0</b></div><div><span>ACCURACY</span><b id="accuracy">100%</b></div><div><span>COMBO</span><b id="combo">0×</b></div><div><span>TIME</span><b id="timer">00:00</b></div></div>
+          </div>
+          <aside class="mission-card">
+            <p class="eyebrow">YOUR MISSION</p><h3>Defeat the opponent</h3>
+            <p class="muted">Type the paragraph accurately. Every correct character fuels your attacks. Build a streak to unleash powerful combos.</p>
+            <div class="enemy-info"><span class="enemy-icon">☠</span><div><b id="enemy-level">Level 1 Opponent</b><small id="enemy-desc">A beginner training dummy</small></div></div>
+            <div class="power-box"><span>⚡ POWER METER</span><div class="power-track"><div id="power-fill"></div></div><small id="power-label">Build your combo to charge a special attack</small></div>
+            <button id="start-btn" class="primary-btn">START FIGHT <span>→</span></button>
+            <button id="next-btn" class="primary-btn hidden">NEXT OPPONENT →</button>
+            <p id="status-message" class="status-message">Ready when you are. Press Start Fight.</p>
+            <button id="support-btn" class="small-btn support-btn">❤ Support the game (opens sponsor page)</button>
+          </aside>
+        </div>
+        <div class="typing-card">
+          <div class="typing-head"><div><p class="eyebrow">TYPE TO ATTACK</p><h3>Combat text</h3></div><span class="hint-pill">💡 Accuracy matters!</span></div>
+          <div id="prompt-text" class="prompt-text">Press <b>START FIGHT</b> to reveal your first challenge paragraph.</div>
+          <textarea id="typing-input" rows="3" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" placeholder="Your typing area will unlock when the fight begins..." disabled></textarea>
+          <div class="typing-footer"><span id="typing-progress">0 / 0 characters</span><span>Mobile tip: landscape mode gives you more room.</span></div>
+        </div>
+      </section>
+
+      <section id="fighters-panel" class="panel">
+        <div class="section-title"><div><p class="eyebrow">YOUR COLLECTION</p><h2>Choose your fighter</h2></div><p class="muted">Win battles and level up to unlock new styles.</p></div>
+        <div id="fighter-grid" class="fighter-grid"></div>
+      </section>
+      <section id="achievements-panel" class="panel">
+        <div class="section-title"><div><p class="eyebrow">MILESTONES</p><h2>Achievements</h2></div><p class="muted">Every battle makes you stronger.</p></div>
+        <div id="achievement-grid" class="achievement-grid"></div>
+      </section>
+      <section id="leaderboard-panel" class="panel">
+        <div class="section-title"><div><p class="eyebrow">GLOBAL RANKINGS</p><h2>Hall of fighters</h2></div><button id="refresh-board" class="small-btn">Refresh</button></div>
+        <div class="leaderboard-wrap"><table><thead><tr><th>RANK</th><th>FIGHTER</th><th>LEVEL</th><th>BEST WPM</th><th>WINS</th></tr></thead><tbody id="leaderboard-body"><tr><td colspan="5">Connect Supabase to load global scores. You can still play locally.</td></tr></tbody></table></div>
+      </section>
+    </main>
+    <footer>TYPE CLASH <span>·</span> A typing game. Train fairly, fight honorably. <span>·</span> Sponsor pages may open in a new tab to keep the game free.</footer>
+  </div>
+
+  <div id="auth-modal" class="modal hidden"><div class="modal-card"><button id="auth-close" class="close-btn">×</button><p class="eyebrow">SAVE YOUR PROGRESS</p><h2>Join the arena</h2><p class="muted">Create an account to save your level, wins and leaderboard score across devices.</p>
+    <form id="auth-form"><label>Email<input id="email" type="email" required placeholder="you@example.com"></label><label>Password<input id="password" type="password" minlength="6" required placeholder="At least 6 characters"></label><label>Fighter name<input id="display-name" maxlength="18" placeholder="Shadow Rookie"></label><div class="auth-buttons"><button type="submit" class="primary-btn" id="signup-btn">Create account</button><button type="button" id="login-btn" class="small-btn">I already have an account</button></div></form><p id="auth-message" class="status-message"></p><button id="signout-btn" class="text-btn hidden">Sign out</button></div></div>
+  <script src="config.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
