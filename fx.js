@@ -35,7 +35,7 @@ return{init,
 
 window.Arena=(()=>{
 const cv=document.getElementById("arena"),c=cv.getContext("2d"),R=Math.PI/180;
-let W=0,H=0,L=150,gy=250,now=0,shake=0,flash=0,slow=0,parts=[],pend=[],n=0,prev=0,hue=0,pc="#b8f35a",ec="#ff5c75",zoom=1,zf=0,esc=1,rain=[],vig=null,grain=null;
+let W=0,H=0,L=150,gy=250,now=0,shake=0,flash=0,slow=0,parts=[],pend=[],n=0,prev=0,hue=0,pc="#b8f35a",ec="#ff5c75",zoom=1,zf=0,esc=1,rain=[],vig=null,grain=null,word=null,wordT=0,wordIdx=-1;
 const COL={shadow:"#b8f35a",ronin:"#ffc75e",volt:"#59d8ed",flame:"#ff7a45",frost:"#9ad7ff",legend:"#ff5ccf"};
 // pose: [lean,a1u,a1l,a2u,a2l,l1u,l1l,l2u,l2l,dx,dy,rot]  angles: 0=down 90=forward 180=up
 const G=[8,45,115,25,100,25,5,-25,-5,0,0,0],KO=[-70,-60,30,-50,30,5,-5,-15,-5,-.25,.04,1.45],FLY=[-40,100,60,120,70,70,40,40,20,0,0,0],BLK=[10,60,170,50,165,25,5,-25,-5,-.02,.03,0];
@@ -110,13 +110,26 @@ function attack(sp){if(P.down||E.down||E.tw||E.a===M.up)return;if(P.a&&!P.a.hold
 function enemyAttack(){if(P.down||E.down||E.tw)return 0;const nm=["jab","cross","hook","teep","elbow","knee"][n++%6],m=M[nm],bl=Math.random()<.3;
  play(E,nm);Sfx.whoosh();pend.push({at:now+m.h*m.d,fn:()=>hit(E,m.s,bl)});return bl?.35:1}
 function end(win){pend.length=0;E.tw=null;const v=win?E:P,w=win?P:E;v.down=1;play(v,"ko");play(w,"win");slow=.6;shake=24;flash=1;zoom=1.35;zf=v.x;burst(v.x,gy-.5*L,50,"#ffd24a");dust(v.x,16)}
+function setWord(ch,cur,wi,tot){if(!ch){word=null;return}if(wi!==wordIdx){wordIdx=wi;wordT=performance.now()}word={ch,cur,wi,tot}}
+function drawWord(fx,fy){if(!word||!word.ch.length||P.down)return;const n=word.ch.length;let fs=Math.max(20,Math.min(34,L*.17));fs=Math.min(fs,(W-44)/(.62*n));
+ const cw=fs*.62,tw=cw*n,bh=fs*1.7,bw=tw+fs*1.1,pop=Math.max(0,1-(performance.now()-wordT)/160);
+ let bx=W/2+(P.x-fx)*zoom;bx=Math.max(bw/2+6,Math.min(W-bw/2-6,bx));const by=fy+((gy-1.3*L)-fy)*zoom;
+ c.save();c.translate(bx,by);const s=1+pop*.18;c.scale(s,s);
+ c.fillStyle="rgba(8,12,22,.86)";c.strokeStyle="#59d8ed";c.lineWidth=2;c.beginPath();if(c.roundRect)c.roundRect(-bw/2,-bh/2,bw,bh,fs*.5);else c.rect(-bw/2,-bh/2,bw,bh);c.fill();c.stroke();
+ c.beginPath();c.moveTo(-fs*.35,bh/2);c.lineTo(0,bh/2+fs*.5);c.lineTo(fs*.35,bh/2);c.fill();
+ c.font=`700 ${fs}px ui-monospace,Menlo,Consolas,monospace`;c.textAlign="center";c.textBaseline="middle";
+ word.ch.forEach(([ch,st],i)=>{const x=-tw/2+cw*(i+.5);
+  if(st===2){c.fillStyle="#ff5c75";c.fillRect(x-cw/2,-fs*.62,cw,fs*1.24)}
+  c.fillStyle=st===1?"#b8f35a":st===2?"#fff":i===word.cur?"#fff":"#c9d3ea";c.fillText(ch,x,0);
+  if(i===word.cur){c.fillStyle="#59d8ed";c.fillRect(x-cw/2,fs*.58,cw,3)}});
+ c.font=`600 ${Math.max(10,fs*.38)}px sans-serif`;c.fillStyle="rgba(255,255,255,.55)";c.fillText(`${word.wi+1}/${word.tot}`,0,-bh/2-fs*.3);c.restore()}
 function layout(){L=Math.min(H*.52,W*.46);gy=H*.84;const gap=Math.min(W*.5,L*.58);P.x=W/2-gap/2;E.x=W/2+gap/2}
 function resize(){const r=cv.getBoundingClientRect(),d=Math.min(2,window.devicePixelRatio||1);if(!r.width||!r.height)return;W=r.width;H=r.height;cv.width=W*d;cv.height=H*d;c.setTransform(d,0,0,d,0,0);layout();
  vig=c.createRadialGradient(W/2,H/2,Math.min(W,H)*.35,W/2,H/2,Math.max(W,H)*.75);vig.addColorStop(0,"rgba(0,0,0,0)");vig.addColorStop(1,"rgba(0,0,0,.65)");
  rain=Array.from({length:Math.round(W/12)},()=>[Math.random()*W,Math.random()*H,500+Math.random()*300]);
  if(!grain){grain=document.createElement("canvas");grain.width=grain.height=96;const g=grain.getContext("2d");for(let i=0;i<1400;i++){g.fillStyle=`rgba(255,255,255,${Math.random()*.5})`;g.fillRect(Math.random()*96,Math.random()*96,1,1)}}}
 function reset(key,h,boss){pc=COL[key]||COL.shadow;hue=h||0;ec=`hsl(${(350+hue)%360},80%,${boss?48:60}%)`;esc=boss?1.12:1;
- [P,E].forEach(f=>{f.down=0;f.a=null;f.ox=0;f.tw=null;f.th=[];f.tf=[]});pend.length=0;parts.length=0;shake=flash=slow=0;zoom=1;resize()}
+ [P,E].forEach(f=>{f.down=0;f.a=null;f.ox=0;f.tw=null;f.th=[];f.tf=[]});pend.length=0;parts.length=0;shake=flash=slow=0;zoom=1;word=null;resize()}
 function frame(t){requestAnimationFrame(frame);const dt=Math.min(.05,(t-prev)/1000||0);prev=t;if(!W)return;
  const k=slow>0?.18:1;slow=Math.max(0,slow-dt);const d=dt*k;now+=d;
  for(let i=pend.length-1;i>=0;i--)if(now>=pend[i].at)pend.splice(i,1)[0].fn();
@@ -128,7 +141,8 @@ function frame(t){requestAnimationFrame(frame);const dt=Math.min(.05,(t-prev)/10
   else{p.x+=p.vx*d;p.y+=p.vy*d;p.vy+=600*d;c.fillStyle=p.c;c.globalAlpha=Math.min(1,p.l*3);c.fillRect(p.x,p.y,p.s,p.s);c.globalAlpha=1}});
  c.restore();c.fillStyle="rgba(15,45,75,.14)";c.fillRect(0,0,W,H);c.fillStyle=vig;c.fillRect(0,0,W,H);
  c.globalAlpha=.08;c.drawImage(grain,-Math.random()*96,-Math.random()*96,W+96,H+96);c.globalAlpha=1;
+ drawWord(fx,fy);
  if(flash>.02){c.fillStyle=`rgba(255,255,255,${flash*.4})`;c.fillRect(0,0,W,H)}}
 if(window.ResizeObserver)new ResizeObserver(resize).observe(cv);window.addEventListener("resize",resize);
 requestAnimationFrame(frame);
-return{attack,enemyAttack,end,reset,resize}})();
+return{attack,enemyAttack,end,reset,resize,word:setWord}})();
