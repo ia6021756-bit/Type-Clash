@@ -73,7 +73,13 @@
     for(;wi<ws.length-1;wi++){const e=st+ws[wi].length;if(typed<=e)break;st=e+1}
     const w=ws[wi],ch=[];for(let j=0;j<w.length;j++){const i=st+j;ch.push([w[j],i<typed?(v[i]===target[i]?1:2):0])}
     Arena.word(ch,Math.max(0,Math.min(w.length,typed-st)),wi,ws.length)}
-  $("arena").addEventListener("pointerdown",()=>{if(running)$("typing-input").focus({preventScroll:true})});
+  {const ti=$("typing-input"),kf=()=>{if(running)ti.focus({preventScroll:true})},hint=document.createElement("button");
+    hint.id="kb-hint";hint.className="kb-hint hidden";hint.textContent="⌨ TAP HERE TO TYPE";document.body.appendChild(hint);
+    const sync=()=>hint.classList.toggle("hidden",!(running&&document.body.classList.contains("fighting")&&document.activeElement!==ti));
+    // keep keyboard open: a tap on the arena / sound buttons must not steal focus from the typing input
+    [$("arena"),document.querySelector(".hud-btns")].forEach(el=>el.addEventListener("mousedown",e=>{if(running)e.preventDefault()}));
+    $("arena").addEventListener("click",()=>{kf();sync()});hint.addEventListener("click",()=>{kf();sync()});
+    ti.addEventListener("focus",sync);ti.addEventListener("blur",()=>setTimeout(sync,60));document.addEventListener("visibilitychange",()=>setTimeout(sync,200));setInterval(sync,500)}
   $("result-btn").onclick=startFight;
   $("exit-btn").onclick=()=>{document.body.classList.remove("fighting");$("result").classList.add("hidden");window.scrollTo(0,0);Arena.reset(state.selected,0)};
   if(window.visualViewport){const f=()=>document.body.classList.contains("fighting")&&fitFight();visualViewport.addEventListener("resize",f);visualViewport.addEventListener("scroll",f)}

@@ -65,3 +65,8 @@ body.fighting .typing-card{left:0!important;right:auto!important;top:var(--vvt,0
 .r-line{font-size:14px;color:#fff}.r-line b{color:var(--lime)}
 .r-note{font:700 13px 'DM Sans',sans-serif;color:var(--gold)}
 .result-btns{flex-wrap:wrap;justify-content:center}
+
+/* ===== v6: keyboard fix - "tap to type" hint shown whenever the keyboard is closed during a fight ===== */
+.kb-hint{position:fixed;left:0;right:0;bottom:0;top:calc(var(--vvt,0px) + var(--ah,300px));z-index:45;border:0;background:rgba(14,17,27,.55);color:#fff;font:800 clamp(18px,5vw,26px) 'DM Sans',sans-serif;letter-spacing:.12em;display:flex;align-items:center;justify-content:center;cursor:pointer;animation:kbpulse 1.4s ease-in-out infinite}
+.kb-hint.hidden{display:none}
+@keyframes kbpulse{50%{color:var(--cyan)}}
