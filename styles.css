@@ -70,3 +70,10 @@ body.fighting .typing-card{left:0!important;right:auto!important;top:var(--vvt,0
 .kb-hint{position:fixed;left:0;right:0;bottom:0;top:calc(var(--vvt,0px) + var(--ah,300px));z-index:45;border:0;background:rgba(14,17,27,.55);color:#fff;font:800 clamp(18px,5vw,26px) 'DM Sans',sans-serif;letter-spacing:.12em;display:flex;align-items:center;justify-content:center;cursor:pointer;animation:kbpulse 1.4s ease-in-out infinite}
 .kb-hint.hidden{display:none}
 @keyframes kbpulse{50%{color:var(--cyan)}}
+
+/* ===== v8: characters ===== */
+.fighter-cv{display:block;width:100%;max-width:120px;height:auto;margin:0 auto 10px;border-radius:12px}
+.char-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.char-cell{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:12px;padding:6px 4px 8px;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:2px}
+.char-cell canvas{width:100%;height:auto;border-radius:8px}.char-cell b{font-size:11px;line-height:1.2}.char-cell i{font-style:normal;font-size:10px;color:var(--gold);min-height:12px}
+.char-cell.cur{border-color:var(--lime)}.char-cell.lock{cursor:default}

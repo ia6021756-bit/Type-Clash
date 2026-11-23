@@ -9,12 +9,26 @@
     "The final opponent is stronger than before. Stay patient, read each word, and unleash your special attack at the right moment."
   ];
   const fighters = [
-    {id:"shadow",name:"Shadow",emoji:"🥷",style:"Balanced ninja style",unlock:1},
-    {id:"ronin",name:"Ronin",emoji:"🗡️",style:"Heavy sword strikes",unlock:3},
-    {id:"volt",name:"Volt",emoji:"⚡",style:"Fast electric combos",unlock:5},
-    {id:"flame",name:"Flame",emoji:"🔥",style:"Powerful flame attacks",unlock:8},
-    {id:"frost",name:"Frost",emoji:"❄️",style:"Precise icy counterattacks",unlock:12},
-    {id:"legend",name:"Legend",emoji:"🐉",style:"Master-level dragon stance",unlock:18}
+    {id:"shadow",name:"Shadow Rookie",emoji:"🥷",style:"Balanced starter",clear:0},
+    {id:"straw",name:"Straw Hat Sailor",emoji:"👒",style:"Free-spirited brawler",clear:5},
+    {id:"racer",name:"Street Racer",emoji:"🧢",style:"Fast hoodie fighter",clear:10},
+    {id:"boxer",name:"Iron Boxer",emoji:"🥊",style:"Heavy gloves",clear:15},
+    {id:"cowboy",name:"Desert Cowboy",emoji:"🤠",style:"Dusty duelist",clear:20},
+    {id:"ninja",name:"Night Ninja",emoji:"🌙",style:"Silent shadow",clear:25},
+    {id:"chef",name:"Chef Chaos",emoji:"👨‍🍳",style:"Kitchen knockout",clear:30},
+    {id:"pirate",name:"Pirate Captain",emoji:"🏴‍☠️",style:"Sea-dog scrapper",clear:35},
+    {id:"ronin",name:"Wandering Ronin",emoji:"🗡️",style:"Calm blade master",clear:40},
+    {id:"suit",name:"Agent Suit",emoji:"🕴️",style:"Cool-headed pro",clear:45},
+    {id:"knight",name:"Steel Knight",emoji:"🛡️",style:"Armored tank",clear:50},
+    {id:"viking",name:"Viking Raider",emoji:"🪓",style:"Horned warrior",clear:55},
+    {id:"volt",name:"Volt Runner",emoji:"⚡",style:"Electric speedster",clear:60},
+    {id:"flame",name:"Flame Monk",emoji:"🔥",style:"Burning discipline",clear:65},
+    {id:"wizard",name:"Star Wizard",emoji:"🧙",style:"Mystic robes",clear:70},
+    {id:"punk",name:"Neon Punk",emoji:"🎸",style:"Street-rock rebel",clear:75},
+    {id:"frost",name:"Frost Warrior",emoji:"❄️",style:"Icy armor",clear:80},
+    {id:"cat",name:"Cat Hero",emoji:"🐱",style:"Agile superhero",clear:85},
+    {id:"king",name:"Crimson King",emoji:"👑",style:"Royal fury",clear:90},
+    {id:"legend",name:"Dragon Legend",emoji:"🐉",style:"Golden champion",clear:95}
   ];
   const achievements = [
     {id:"first",name:"First Blood",emoji:"🥇",desc:"Win your first battle",test:s=>s.wins>=1},
@@ -35,9 +49,9 @@
   function setTab(name){document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===name));document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id===`${name}-panel`));if(name==="leaderboard")loadLeaderboard()}
   function renderPrompt(){if(document.body.classList.contains("fighting")){showWord();return}let html="";for(let i=0;i<target.length;i++){let cls=i<typed?(i<typed&&$("typing-input").value[i]===target[i]?"correct":"wrong"):"";if(i===typed)cls+=" current";html+=`<span class="${cls}">${escapeHtml(target[i])}</span>`}$("prompt-text").innerHTML=html;{const pt=$("prompt-text"),cu=pt.querySelector(".current");if(cu)pt.scrollTop=Math.max(0,cu.offsetTop-pt.clientHeight/2)}showWord();$("typing-progress").textContent=`${typed} / ${target.length} characters`}
   function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-  function startFight(){if(running)return;maybeShowAd();running=true;enterFight();playerHP=100;enemyHP=eMax=100;combo=0;power=0;typed=0;correct=0;elapsed=0;{const lv=fightLevel(),inf=Levels.info(lv);target=fightText(lv,0);hitGap=inf.interval;L0=target.length;dmgPerChar=100/(L0*.8);
-      const tk=(L0*.8/1.25)/(Math.max(6,inf.targetWpm*.6)*5/60);enemyDmg=Math.min(22,Math.max(2,100*(inf.interval/1000)/tk*1.25));
-      lineEnds=computeLines(target,0);li=0;paraN=0;pool=0;stamps=[];pendingSp=null;Arena.setSpeed(1+inf.d*.5)}$("typing-input").value="";$("typing-input").disabled=false;$("typing-input").placeholder="Type the paragraph here...";$("typing-input").focus({preventScroll:true});$("start-btn").classList.add("hidden");$("next-btn").classList.add("hidden");$("status-message").textContent="Fight started! Type accurately to attack.";startedAt=Date.now();lastTick=startedAt;renderPrompt();updateBattle();requestAnimationFrame(tick)}
+  function startFight(){if(running)return;maybeShowAd();running=true;enterFight();playerHP=100;enemyHP=eMax=100;combo=0;power=0;typed=0;correct=0;elapsed=0;{const lv=fightLevel(),inf=Levels.info(lv);target=fightText(lv,0);hitGap=inf.interval;L0=target.length;dmgPerChar=100/(L0*.9);
+      const tk=(L0*.9/1.25)/(Math.max(8,inf.targetWpm*(.95-.2*inf.d))*5/60);enemyDmg=Math.min(32,Math.max(3,100*(inf.interval/1000)/tk*1.05));
+      lineEnds=computeLines(target,0);li=0;paraN=0;pool=0;stamps=[];pendingSp=null;Arena.setSpeed(1+inf.d*.6,inf.d*.5)}$("typing-input").value="";$("typing-input").disabled=false;$("typing-input").placeholder="Type the paragraph here...";$("typing-input").focus({preventScroll:true});$("start-btn").classList.add("hidden");$("next-btn").classList.add("hidden");$("status-message").textContent="Fight started! Type accurately to attack.";startedAt=Date.now();lastTick=startedAt;renderPrompt();updateBattle();requestAnimationFrame(tick)}
   function tick(){if(!running)return;const now=Date.now();elapsed=(now-startedAt)/1000;$("timer").textContent=formatTime(elapsed);const wpm=elapsed>0?Math.round((correct/5)/(elapsed/60)):0;$("wpm").textContent=wpm;Arena.setTempo(tempoNow());if(now-lastTick>hitGap&&enemyHP>0){lastTick=now;Arena.enemyAttack()}requestAnimationFrame(tick)}
   function formatTime(s){return `${String(Math.floor(s/60)).padStart(2,"0")}:${String(Math.floor(s%60)).padStart(2,"0")}`}
   function updateBattle(){$("player-health").style.width=playerHP+"%";$("enemy-health").style.width=enemyHP+"%";$("combo").textContent=combo+"×";$("power-fill").style.width=power+"%";$("power-label").textContent="Finish the line to unleash a special move!";$("accuracy").textContent=(typed?Math.round(correct/typed*100):100)+"%"}
@@ -58,9 +72,11 @@
     if(typed>target.length-40)appendPara();
     renderPrompt();updateBattle()}
   function endFightCore(win){running=false;$("typing-input").disabled=true;const wpm=Math.round((correct/5)/(Math.max(1,elapsed)/60));const acc=typed?correct/typed:1;state.bestWpm=Math.max(state.bestWpm,wpm);if(win){state.wins++;const gained=gainXp(wpm);advanceLevel();state.xp+=gained;$("status-message").textContent=`VICTORY! +${gained} XP · ${wpm} WPM · ${Math.round(acc*100)}% accuracy`;tone(520,.2,"sine");if(acc>=.98)state.perfect++;while(state.xp>=100){state.xp-=100;state.level++}unlockFighters();checkAchievements();$("next-btn").classList.remove("hidden");saveState();saveCloud()}else{$("status-message").textContent="Defeat! The opponent got you. Try again and build a steadier rhythm.";$("start-btn").classList.remove("hidden");tone(100,.3,"sawtooth")}updateBattle();renderFighters();renderAchievements()}
-  function unlockFighters(){fighters.forEach(f=>{if(state.level>=f.unlock&&!state.unlocked.includes(f.id))state.unlocked.push(f.id)})}
+  function unlockFighters(){const cl=(state.stage||1)-1;state.unlocked=fighters.filter(f=>cl>=f.clear).map(f=>f.id);if(!state.unlocked.includes(state.selected))state.selected=state.unlocked[0]}
   function checkAchievements(){achievements.forEach(a=>{if(!state.achievements.includes(a.id)&&a.test(state)){state.achievements.push(a.id);$("status-message").textContent+=" Achievement unlocked: "+a.name+"!"}})}
-  function renderFighters(){$("fighter-grid").innerHTML=fighters.map(f=>{const unlocked=state.unlocked.includes(f.id),selected=state.selected===f.id;return `<article class="fighter-tile ${selected?"selected":""} ${unlocked?"":"locked"}"><div class="fighter-art">${f.emoji}</div><h3>${f.name}</h3><p>${f.style}</p><small>${unlocked?"UNLOCKED":`UNLOCK AT LEVEL ${f.unlock}`}</small><button class="${selected?"small-btn":"primary-btn"}" data-fighter="${f.id}" ${unlocked?"":"disabled"}>${selected?"SELECTED":unlocked?"SELECT FIGHTER":"LOCKED"}</button></article>`}).join("");document.querySelectorAll("[data-fighter]").forEach(b=>b.onclick=()=>{state.selected=b.dataset.fighter;saveState();renderFighters()})}
+  function renderFighters(){$("fighter-grid").innerHTML=fighters.map(f=>{const un=state.unlocked.includes(f.id),sel=state.selected===f.id;return `<article class="fighter-tile ${sel?"selected":""} ${un?"":"locked"}"><canvas class="fighter-cv" width="150" height="190" data-cv="${f.id}"></canvas><h3>${f.name}</h3><p>${f.style}</p><small>${un?"UNLOCKED":`CLEAR LEVEL ${f.clear} TO UNLOCK`}</small><button class="${sel?"small-btn":"primary-btn"}" data-fighter="${f.id}" ${un?"":"disabled"}>${sel?"SELECTED":un?"SELECT FIGHTER":"LOCKED"}</button></article>`}).join("");
+    document.querySelectorAll("[data-cv]").forEach(cv=>{Arena.preview(cv,cv.dataset.cv);if(!state.unlocked.includes(cv.dataset.cv))cv.style.filter="brightness(.18) saturate(0)"});
+    document.querySelectorAll("[data-fighter]").forEach(b=>b.onclick=()=>{state.selected=b.dataset.fighter;saveState();renderFighters();resetArena()})}
   function renderAchievements(){$("achievement-grid").innerHTML=achievements.map(a=>{const done=state.achievements.includes(a.id);return `<article class="achievement-tile"><div class="achievement-icon">${a.emoji}</div><h3>${a.name}</h3><p>${a.desc}</p><small>${done?"✓ UNLOCKED":"LOCKED"}</small></article>`}).join("")}
   async function loadCloud(){if(!supabase||!user)return;const {data}=await supabase.from("player_profiles").select("*").eq("id",user.id).maybeSingle();if(data){state={...state,name:data.display_name||state.name,level:data.level||1,xp:data.xp||0,wins:data.wins||0,bestWpm:data.best_wpm||0};saveState()}updateAuthUI()}
   async function saveCloud(){if(!supabase||!user)return;const payload={id:user.id,display_name:state.name,level:state.level,xp:state.xp,wins:state.wins,best_wpm:state.bestWpm,updated_at:new Date().toISOString()};const {error}=await supabase.from("player_profiles").upsert(payload);if(error)console.warn("Cloud save:",error.message)}
@@ -75,13 +91,15 @@
   function maybeShowAd(){if(!AD.ENABLED||!AD.LINK)return;fightsStarted++;if(fightsStarted%(AD.EVERY_N_FIGHTS||2)===0&&adReady())openAd()}
   function setupSupportButton(){const b=$("support-btn");if(!b)return;if(!AD.ENABLED||!AD.SUPPORT_BUTTON||!AD.LINK){b.classList.add("hidden");return}b.onclick=()=>{openAd();const xp=AD.SUPPORT_REWARD_XP||0;if(xp>0){state.xp+=xp;while(state.xp>=100){state.xp-=100;state.level++}unlockFighters();saveState();$("status-message").textContent=`Thanks for supporting the game! +${xp} XP`}else{$("status-message").textContent="Thanks for supporting the game! ❤"}}}
   // ---------- Fight screen ----------
+  const ESET=[["bot","thug"],["thug","racer"],["racer","boxer"],["pirate","viking"],["punk","volt"],["flame","ronin"],["cowboy","ninja"],["suit","chef"],["ninja","frost"],["king","knight"]],
+    EBOSS=["knight","viking","pirate","punk","legend","wizard","cowboy","suit","ninja","king"];
   let eMax=100,musicOn=true,enemyDmg=4,hitGap=3500,mode=null;tone=function(){};
   function updateStageUI(){const i=Levels.info(fightLevel());$("stage-title").textContent=i.zone;$("stage-badge").textContent="LEVEL "+String(i.level).padStart(3,"0");$("enemy-name").textContent=i.enemy}
   const ENEMIES=["TRAINING BOT","STREET BRAWLER","NINJA ACOLYTE","IRON MONK","SHADOW LORD","DRAGON KING"];
   function fitFight(){const v=window.visualViewport,vh=v?v.height:innerHeight,vt=v?v.offsetTop:0,w=innerWidth,s=document.documentElement.style;
     s.setProperty("--vvh",vh+"px");s.setProperty("--vvt",vt+"px");s.setProperty("--ah",Math.round(Math.min(vh,Math.max(280,Math.min(560,w*1.15))))+"px")}
   function enterFight(){document.body.classList.add("fighting");$("result").classList.add("hidden");window.scrollTo(0,0);fitFight();
-    updateStageUI();{const i=Levels.info(fightLevel());Arena.reset(state.selected,i.hue,i.boss)}Sfx.init();Sfx.musicStart()}
+    updateStageUI();resetArena();Sfx.init();Sfx.musicStart()}
   function showResult(win){$("result-title").textContent=win?"VICTORY":"DEFEAT";$("result-sub").textContent=$("status-message").textContent;
     $("result-btn").textContent=win?"NEXT OPPONENT →":"TRY AGAIN";$("result").classList.remove("hidden")}
   function endFight(win){const pre=beforeFight();endFightCore(win);afterFight(win,pre);updateStageUI();Arena.word(null);if(win)enemyHP=0;updateBattle();Arena.end(win);Sfx.musicStop();win?Sfx.win():Sfx.ko();setTimeout(()=>showResult(win),1700)}
@@ -97,10 +115,10 @@
     $("arena").addEventListener("click",()=>{kf();sync()});hint.addEventListener("click",()=>{kf();sync()});
     ti.addEventListener("focus",sync);ti.addEventListener("blur",()=>setTimeout(sync,60));document.addEventListener("visibilitychange",()=>setTimeout(sync,200));setInterval(sync,500)}
   $("result-btn").onclick=startFight;
-  $("exit-btn").onclick=()=>{document.body.classList.remove("fighting");$("result").classList.add("hidden");window.scrollTo(0,0);Arena.reset(state.selected,0)};
+  $("exit-btn").onclick=()=>{document.body.classList.remove("fighting");$("result").classList.add("hidden");window.scrollTo(0,0);resetArena()};
   if(window.visualViewport){const f=()=>document.body.classList.contains("fighting")&&fitFight();visualViewport.addEventListener("resize",f);visualViewport.addEventListener("scroll",f)}
   window.addEventListener("resize",()=>document.body.classList.contains("fighting")&&fitFight());
-  updateStageUI();Arena.reset(state.selected,Levels.info(fightLevel()).hue);
+  updateStageUI();resetArena();
   // ---------- Combat v7: health race, speed-based attacks, line specials ----------
   let pool=0,L0=100,dmgPerChar=1,lineEnds=[],li=0,paraN=0,stamps=[],pendingSp=null,spIdx=0;
   const SPID=["epunch","choke","flip","throw"],SPN=["ENERGY PUNCH!","CHOKEHOLD!","BACKFLIP KICK!","SLAM!"];
@@ -114,9 +132,12 @@
   function fireLine(value){const ls=li>0?lineEnds[li-1]:0,le=lineEnds[li];let ok=0;for(let k=ls;k<le;k++)if(value[k]===target[k])ok++;
     const idx=li%4;li++;if(ok/Math.max(1,le-ls)>=.85){spIdx=idx;if(!Arena.special(SPID[idx]))pendingSp=idx}else say("SLOPPY LINE!","#ff9aa8")}
   Arena.onHit=(who,kind,bl,mag)=>{if(!running)return;
-    if(who==="p"){let d=pool;pool=0;if(kind==="S")d+=eMax*.1*mag;else if(kind==="c")d+=eMax*.03;if(bl)d*=.35;
+    if(who==="p"){let d=pool;pool=0;if(kind==="S")d+=eMax*.1*mag;else if(kind==="c")d+=eMax*.03;if(bl)d*=(bl==="d"?.45:.35);
       enemyHP=Math.max(0,enemyHP-d);updateBattle();say(kind==="S"?SPN[spIdx]:`-${Math.round(d)}`,kind==="S"?"#ffd24a":"");if(enemyHP<=0)endFight(true)}
     else{const d=enemyDmg*(bl?.35:1)*(kind==="h"?1.5:1);playerHP=Math.max(0,playerHP-d);updateBattle();say(`-${Math.round(d)}`,"#ff5c75");if(playerHP<=0)endFight(false)}};
+  // ---------- Characters (v8) ----------
+  function enemyId(lv){const z=Math.min(9,Math.floor((lv-1)/10));let id=lv%10===0?EBOSS[z]:ESET[z][lv%2];if(id===state.selected)id=ESET[z][(lv+1)%2];if(id===state.selected)id="bot";return id}
+  function resetArena(){const lv=fightLevel(),i=Levels.info(lv);Arena.reset(state.selected,i.hue,i.boss,enemyId(lv))}
   // ---------- Retention features (v5): streak, daily challenge, stars + level picker, personal best, ranks ----------
   const RANKS=[[1,"ROOKIE","🥉"],[3,"BRAWLER","🥊"],[6,"FIGHTER","⚔️"],[10,"WARRIOR","🛡️"],[15,"ELITE","💎"],[22,"CHAMPION","🏆"],[30,"LEGEND","👑"],[40,"MYTHIC","🔥"]];
   function rankOf(lv){let r=0;RANKS.forEach((x,i)=>{if(lv>=x[0])r=i});return{idx:r,name:RANKS[r][1],icon:RANKS[r][2]}}
@@ -133,7 +154,7 @@
   function gainXp(wpm){let g=35+Math.round(wpm/2);if(!(mode&&mode.type==="daily")&&fightLevel()<(state.stage||1))g=Math.round(g/2);lastGain=g;return g}
   function advanceLevel(){if(mode&&mode.type==="daily")return;const l=fightLevel();if(l>=(state.stage||1))state.stage=l+1;state.pick=Math.min(l+1,state.stage)}
   function starsFor(lv,wpm,acc){const t=Levels.info(lv).targetWpm;return acc>=.97&&wpm>=t?3:(acc>=.92||wpm>=t)?2:1}
-  function beforeFight(){return{lvl:fightLevel(),m:mode,best:state.bestWpm,rank:rankOf(state.level).idx}}
+  function beforeFight(){return{lvl:fightLevel(),m:mode,best:state.bestWpm,rank:rankOf(state.level).idx,chars:state.unlocked.length}}
   function afterFight(win,pre){const wpm=Math.round((correct/5)/(Math.max(1,elapsed)/60)),acc=typed?correct/typed:1,daily=!!(pre.m&&pre.m.type==="daily");
     R={win,lvl:pre.lvl,wpm,acc:Math.round(acc*100),daily,gain:win?lastGain:0,stars:0,note:"",prevBest:pre.best};
     if(typed>=12&&elapsed>=4)state.hist=[...(state.hist||[]),wpm].slice(-12);
@@ -141,6 +162,7 @@
       if(!daily){state.stars=state.stars||{};state.stars[pre.lvl]=Math.max(state.stars[pre.lvl]||0,R.stars)}
       else{const t=todayStr(),d=state.daily;if(!d||d.date!==t){addXp(40);R.note+="Daily bonus +40 XP. "}if(!d||d.date!==t||wpm>d.wpm)state.daily={date:t,wpm,acc:R.acc,stars:R.stars}}
       if(pre.best>0&&wpm>pre.best)R.note+=`NEW RECORD +${wpm-pre.best} WPM! `}
+    if(state.unlocked.length>pre.chars){const nf=fighters[state.unlocked.length-1];R.note+=`NEW CHARACTER: ${nf.name} ${nf.emoji}! Tap Character to use it. `}
     const rk=rankOf(state.level);if(rk.idx>pre.rank)R.note+=`RANK UP: ${rk.name} ${rk.icon}`;
     mode=null;saveState()}
   function spark(){const h=(state.hist||[]).slice(-10);if(h.length<2)return"";const mx=Math.max(...h),mn=Math.min(...h),w=140,ht=28;
@@ -157,6 +179,7 @@
   // --- UI injected by JS, so index.html (and your verification tags) stay untouched ---
   function mkEl(tag,id,cls,html){const e=document.createElement(tag);if(id)e.id=id;if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
   $("start-btn").before(mkEl("div",null,"lvl-row",'<button id="lv-prev" class="lv-arrow">◀</button><button id="lv-label" class="lv-label"></button><button id="lv-next" class="lv-arrow">▶</button>'));
+  $("lv-prev").parentNode.after(mkEl("button","char-btn","small-btn daily-btn"));
   $("support-btn").before(mkEl("button","daily-btn","small-btn daily-btn"),mkEl("button","daily-share","small-btn daily-btn hidden","📤 Share today's result"));
   document.querySelector(".xp-track").after(mkEl("div","streak-badge","streak"));
   document.querySelector(".result-btns").before(mkEl("div","result-extra","result-extra"));
@@ -164,12 +187,17 @@
   function toast(m){let t=$("toast");if(!t){t=mkEl("div","toast","toast");document.body.appendChild(t)}t.textContent=m;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2600)}
   function closeModal(){document.querySelectorAll(".modal").forEach(m=>m.remove())}
   function modal(html,init){closeModal();const m=mkEl("div",null,"modal",`<div class="modal-box">${html}</div>`);m.addEventListener("pointerdown",e=>{if(e.target===m)closeModal()});document.body.appendChild(m);if(init)init(m.firstChild)}
-  function applyPick(){saveState();const i=Levels.info(fightLevel());Arena.reset(state.selected,i.hue,i.boss)}
+  function applyPick(){saveState();resetArena()}
   $("lv-prev").onclick=()=>{if(running)return;state.pick=Math.max(1,fightLevel()-1);applyPick()};
   $("lv-next").onclick=()=>{if(running)return;state.pick=Math.min(state.stage||1,fightLevel()+1);applyPick()};
   $("lv-label").onclick=()=>{if(running)return;const mx=Math.max(100,state.stage||1);let h="<h2>Choose level</h2><div class='lv-grid'>";
     for(let i=1;i<=mx;i++){const lk=i>(state.stage||1),n=(state.stars||{})[i]||0;h+=`<button class="lv-cell${lk?" lock":""}${i===fightLevel()?" cur":""}" data-l="${i}"${lk?" disabled":""}><b>${i}</b><i>${lk?"🔒":n?"★".repeat(n):"–"}</i></button>`}
     modal(h+"</div>",box=>box.querySelectorAll(".lv-cell").forEach(b=>b.onclick=()=>{state.pick=+b.dataset.l;closeModal();applyPick()}))};
+  function openChars(){if(running)return;const h="<h2>Choose character</h2><div class='char-grid'>"+fighters.map(f=>{const un=state.unlocked.includes(f.id);
+      return `<button class="char-cell${un?"":" lock"}${f.id===state.selected?" cur":""}" data-id="${f.id}"${un?"":" disabled"}><canvas width="120" height="150" data-cv="${f.id}"></canvas><b>${f.name}</b><i>${un?"":`🔒 clear level ${f.clear}`}</i></button>`}).join("")+"</div>";
+    modal(h,box=>{box.querySelectorAll("canvas").forEach(cv=>{Arena.preview(cv,cv.dataset.cv);if(!state.unlocked.includes(cv.dataset.cv))cv.style.filter="brightness(.18) saturate(0)"});
+      box.querySelectorAll(".char-cell").forEach(b=>b.onclick=()=>{state.selected=b.dataset.id;saveState();renderFighters();resetArena();closeModal()})})}
+  $("char-btn").onclick=openChars;
   $("daily-btn").onclick=()=>{if(running)return;mode={type:"daily",level:dailyLevel()};startFight()};
   $("result-btn").onclick=()=>{if(R&&R.daily&&!R.win)mode={type:"daily",level:dailyLevel()};startFight()};
   async function shareDaily(){const d=state.daily;if(!d)return;const url=location.href.split("#")[0],st=(state.streak||0);
@@ -187,10 +215,11 @@
   function renderMeta(){if(!$("lv-label"))return;const l=fightLevel(),n=(state.stars||{})[l]||0;
     $("lv-label").innerHTML=`LEVEL ${l} <span class="lv-st">${starStr(n)}</span>`;$("lv-prev").disabled=l<=1;$("lv-next").disabled=l>=(state.stage||1);
     const d=state.daily,done=d&&d.date===todayStr();$("daily-btn").textContent=done?`✅ Daily done · ${d.wpm} WPM ${starStr(d.stars)}`:"⚡ Daily Challenge · same text for everyone · +40 XP";$("daily-share").classList.toggle("hidden",!done);
-    $("streak-badge").textContent=(state.streak||0)>0?`🔥 ${state.streak}-day streak`:"🔥 Claim your daily reward to start a streak";updateStageUI()}
+    {const cf=fighters.find(f=>f.id===state.selected);$("char-btn").textContent=`👤 ${cf?cf.name:"Character"} · change`}$("streak-badge").textContent=(state.streak||0)>0?`🔥 ${state.streak}-day streak`:"🔥 Claim your daily reward to start a streak";updateStageUI()}
   function dailyClaim(){const t=todayStr();if(state.lastDay===t)return;const ns=state.lastDay===dayStr(-1)?(state.streak||0)+1:1,xp=20+Math.min(ns,7)*10+(ns%7===0?100:0);
     modal(`<h2>🔥 Day ${ns}</h2><p>${ns>1?"Your streak continues!":"Your streak starts today!"}${ns%7===0?" 7-day bonus!":""}</p><p class="modal-big">+${xp} XP</p><button id="claim-btn" class="primary-btn">CLAIM</button>`,
       box=>box.querySelector("#claim-btn").onclick=()=>{state.streak=ns;state.bestStreak=Math.max(state.bestStreak||0,ns);state.lastDay=t;addXp(xp);closeModal();toast(`+${xp} XP · ${ns}-day streak 🔥`)})}
   setTimeout(dailyClaim,900);
+  unlockFighters();
   setupSupportButton();renderProfile();renderFighters();renderAchievements();updateBattle();updateAuthUI();setupSupabase();
 })();

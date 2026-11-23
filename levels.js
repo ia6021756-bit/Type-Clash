@@ -13,7 +13,7 @@ const ZONES=["Training Grounds","Back Alley","Rooftop Chase","Harbor Docks","Neo
 const FOES=["Training Bot","Street Thug","Rooftop Runner","Dock Enforcer","Neon Gangster","Dojo Master","Desert Mercenary","Heist Mastermind","Syndicate Elite","Arena Champion"];
 const rnd=a=>a[Math.floor(Math.random()*a.length)],r=n=>Math.floor(Math.random()*n);
 const cls=w=>w.length<=4?1:w.length<=6?2:w.length<=9?3:4;
-function pk(pool,d){const x=Math.random(),p4=Math.max(0,(d-.55)*1.1),p3=Math.min(.6,Math.max(0,(d-.2)*.9)),p2=Math.min(.7,d*1.2);
+function pk(pool,d){const x=Math.random(),p4=Math.max(0,(d-.4)*1.2),p3=Math.min(.6,Math.max(0,(d-.12)*1.0)),p2=Math.min(.75,.1+d*1.8);
  const t=x<p4?4:x<p4+p3?3:x<p4+p3+p2?2:1,f=pool.filter(w=>cls(w)===t);return rnd(f.length?f:pool)}
 const an=w=>/^[aeiou]/.test(w)?"an":"a";
 function sent(d,lv){
@@ -21,21 +21,21 @@ function sent(d,lv){
  const subj=()=>lv>=46&&Math.random()<.3?`${rnd(["Master","Agent","Captain"])} ${rnd(NM)}`:`the ${adj()} ${noun()}`;
  const obj=()=>{const a=adj();return `${an(a)} ${a} ${noun()}`},pp=()=>`${rnd(PR)} the ${adj()} ${noun()}`;
  const T=[()=>`${subj()} ${verb()} ${obj()}`,()=>`${subj()} ${verb()} ${pp()}`,()=>`${subj()} ${verb()} ${adv()}`,()=>`${subj()} ${verb()} ${obj()} ${pp()}`];
- if(lv>=11)T.push(()=>`${subj()} ${verb()} ${obj()} and ${verb()} ${pp()}`);
- if(lv>=16)T.push(()=>`when ${subj()} ${verb()}, ${subj()} ${verb()} ${adv()}`,()=>`${adv()}, ${subj()} ${verb()} ${obj()}`);
- if(lv>=26)T.push(()=>`"${rnd(QT)}," said ${subj()}`);
- if(lv>=36)T.push(()=>`${subj()} landed ${2+r(40)} ${rnd(["punches","kicks","strikes"])} in ${2+r(30)} seconds`);
- if(lv>=56)T.push(()=>`${subj()}'s ${rnd(CA)} ${noun()} ${verb()} ${pp()}`);
- if(lv>=66)T.push(()=>`${subj()} ${verb()} ${obj()}; ${subj()} ${verb()} ${pp()}`);
- if(lv>=76)T.push(()=>`${subj()} ${verb()} ${obj()} (round ${1+r(12)}) with ${50+r(50)}% focus`);
+ if(lv>=6)T.push(()=>`${subj()} ${verb()} ${obj()} and ${verb()} ${pp()}`);
+ if(lv>=10)T.push(()=>`when ${subj()} ${verb()}, ${subj()} ${verb()} ${adv()}`,()=>`${adv()}, ${subj()} ${verb()} ${obj()}`);
+ if(lv>=18)T.push(()=>`"${rnd(QT)}," said ${subj()}`);
+ if(lv>=28)T.push(()=>`${subj()} landed ${2+r(40)} ${rnd(["punches","kicks","strikes"])} in ${2+r(30)} seconds`);
+ if(lv>=42)T.push(()=>`${subj()}'s ${rnd(CA)} ${noun()} ${verb()} ${pp()}`);
+ if(lv>=55)T.push(()=>`${subj()} ${verb()} ${obj()}; ${subj()} ${verb()} ${pp()}`);
+ if(lv>=68)T.push(()=>`${subj()} ${verb()} ${obj()} (round ${1+r(12)}) with ${50+r(50)}% focus`);
  return rnd(T)()}
 function info(level){const lv=Math.max(1,level|0),d=Math.min(1,(lv-1)/99),z=Math.floor((lv-1)/10),boss=lv%10===0;
  return{level:lv,d,boss,zone:lv>100?"Endless Arena":ZONES[z],enemy:(lv>100?"Endless Challenger":FOES[z])+(boss?" ★ BOSS":""),hue:(z%10)*38,
-  interval:Math.round(3500-1700*d),targetWpm:(14+46*d)*(boss?1.1:1)}}
-function text(level){const lv=Math.max(1,level|0),i=info(lv),d=i.d,wc=Math.round((6+52*Math.pow(d,.9))*(i.boss?1.2:1));
+  interval:Math.round(3000-1500*d),targetWpm:(15+55*Math.pow(d,.9))*(boss?1.1:1)}}
+function text(level){const lv=Math.max(1,level|0),i=info(lv),d=i.d,wc=Math.round((8+56*Math.pow(d,.85))*(i.boss?1.2:1));
  let seen=[];try{seen=JSON.parse(localStorage.getItem("typeclash-seen")||"[]")}catch(e){}
  let out="";for(let t=0;t<6;t++){let parts=[],w=0;while(w<wc){let s=sent(d,lv);w+=s.split(" ").length;
-   if(lv>=6){s=s[0].toUpperCase()+s.slice(1);s+=(lv>=26&&Math.random()<.2)?"!":"."}parts.push(s)}
+   if(lv>=4){s=s[0].toUpperCase()+s.slice(1);s+=(lv>=26&&Math.random()<.2)?"!":"."}parts.push(s)}
   out=parts.join(" ");if(!seen.includes(out))break}
  seen.push(out);try{localStorage.setItem("typeclash-seen",JSON.stringify(seen.slice(-40)))}catch(e){}return out}
 return{info,text}})();
