@@ -2,15 +2,15 @@
 // Find both in Supabase Dashboard > Project Settings > API.
 // NEVER put a service_role key in this file.
 window.APP_CONFIG = {
-  SUPABASE_URL: "https://caxauxtujgjaegtnlyvq.supabase.co",
-  SUPABASE_ANON_KEY: "sb_publishable_C34247g6_HUTQ5f41hn9fw_lHn8Ym6_"
+  SUPABASE_URL: "https://YOUR-PROJECT.supabase.co",
+  SUPABASE_ANON_KEY: "YOUR_SUPABASE_ANON_PUBLIC_KEY"
 };
 
 // ---------- ADS / MONETIZATION ----------
 // Your ad-network direct link. It opens in a NEW TAB so the game is never interrupted.
 window.AD_CONFIG = {
-  LINK: "https://uplcm.com/4/12306816",
-  ENABLED: true,
+  LINK: "",
+  ENABLED: false,
   EVERY_N_FIGHTS: 2,        // open the ad link on every 2nd fight start (set 1 for every fight)
   COOLDOWN_SECONDS: 90,     // never open the ad link more often than this
   SUPPORT_BUTTON: true,     // shows a "Support the game" button players can click voluntarily

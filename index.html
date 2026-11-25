@@ -4,44 +4,79 @@
   <meta name="google-site-verification" content="LoBJqeV5uX_1Yn4eE2ZY1T_g4Fgo9tnyx0dJ7vE-rco" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#10131f" />
+  <meta name="theme-color" content="#07060f" />
   <title>TYPE CLASH — Typing Fighter</title>
   <link rel="stylesheet" href="styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>(function(s){s.dataset.zone='12322769',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
-  <script>(function(s){s.dataset.zone='12322776',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar">
-      <a class="brand" href="#"><span class="brand-mark">⚔</span><span>TYPE<span class="accent">CLASH</span></span></a>
+      <button id="menu-btn" class="icon-btn mob-only" aria-label="Menu">☰</button>
+      <a class="brand" href="#"><span class="logo">TYPE<i>⚡</i><span class="accent">CLASH</span></span><small>TYPE FAST. FIGHT HARD.</small></a>
+      <nav class="top-nav desk-only">
+        <button class="tab active" data-tab="home">🏠 HOME</button>
+        <button class="tab" data-tab="arena">⚔ BATTLE</button>
+        <button class="tab" data-tab="leaderboard">📊 LEADERBOARD</button>
+        <button class="tab" data-tab="fighters">👥 CHARACTERS</button>
+        <button class="tab" data-tab="achievements">🏅 ACHIEVEMENTS</button>
+        <button class="tab" data-tab="store">🛒 STORE</button>
+      </nav>
       <div class="top-actions">
-        <span id="user-label" class="user-label">Guest fighter</span>
-        <button class="icon-btn mus-btn" aria-label="Toggle music">🎵</button>
-        <button class="icon-btn snd-btn" aria-label="Toggle sound">🔊</button>
-        <button id="auth-open" class="small-btn">Sign in</button>
+        <button class="icon-btn mus-btn desk-only" aria-label="Toggle music">🎵</button>
+        <button class="icon-btn snd-btn desk-only" aria-label="Toggle sound">🔊</button>
+        <span id="user-label" class="user-label desk-only">Guest fighter</span>
+        <button id="auth-open" class="small-btn desk-only">Sign in</button>
+        <div class="chip desk-only"><span id="chip-avatar" class="chip-av">🥷</span><div><b id="chip-name">Shadow Rookie</b><small>Level <span id="chip-level">1</span></small><div class="chip-bar"><i id="chip-fill"></i></div></div></div>
+        <button id="bell-btn" class="icon-btn mob-only" aria-label="Daily reward">🔔<i class="dot"></i></button>
       </div>
     </header>
 
     <main>
-      <section class="hero-row">
-        <div><p class="eyebrow">TYPE FAST. FIGHT SMART.</p><h1>Every word is a <span class="accent">weapon.</span></h1><p class="sub">Train your typing. Master combos. Become the arena champion.</p></div>
-        <div class="profile-card">
-          <div class="profile-top"><span>FIGHTER PROFILE</span><span id="rank-name">ROOKIE</span></div>
-          <div class="profile-main"><div class="avatar-badge" id="profile-avatar">🥷</div><div><strong id="fighter-name">Shadow Rookie</strong><p>Level <b id="level">1</b> · <b id="xp">0</b> XP</p></div></div>
-          <div class="xp-track"><div id="xp-fill"></div></div>
-          <div class="profile-bottom"><span id="wins">0 wins</span><span id="best-wpm">Best: 0 WPM</span></div>
+      <section id="home-panel" class="panel active">
+        <div class="home-grid">
+          <div class="col-l">
+            <div class="hc prof">
+              <div class="prof-top"><div id="profile-avatar" class="avatar-badge">🥷</div><div class="prof-id"><b id="fighter-name">Shadow Rookie</b><small id="rank-name">ROOKIE</small></div><div class="hex"><b id="level">1</b></div></div>
+              <div class="prof-xp"><span><b id="xp">0</b> / 100 XP</span><div class="xp-track"><div id="xp-fill"></div></div></div>
+              <ul class="stats">
+                <li><span class="si">⚡</span><span>BEST WPM</span><b id="h-wpm">0</b></li>
+                <li><span class="si">🎯</span><span>ACCURACY</span><b id="h-acc">–</b></li>
+                <li><span class="si">🏆</span><span>TOTAL WINS</span><b id="h-wins">0</b></li>
+                <li><span class="si">📈</span><span>WIN RATE</span><b id="h-rate">–</b></li>
+              </ul>
+              <div hidden><span id="wins"></span><span id="best-wpm"></span></div>
+            </div>
+            <div class="duo">
+              <div class="hc streak-card"><div class="sc-top"><div><small>STREAK</small><b id="h-streak">0 DAYS</b><em id="h-streak-msg">Keep it up!</em></div><span class="flame">🔥</span></div><div id="h-week" class="week"></div></div>
+              <div class="hc reward-card"><div class="sc-top"><div><small>DAILY REWARD</small><p>Resets in <b id="h-reset">00:00:00</b></p></div><span class="chest">🎁</span></div><button id="h-claim" class="gold-btn">CLAIM REWARD</button></div>
+            </div>
+          </div>
+          <div class="col-c">
+            <div class="hc hero">
+              <canvas id="hero-l" class="hero-fig l" width="320" height="400"></canvas>
+              <canvas id="hero-r" class="hero-fig r" width="320" height="400"></canvas>
+              <div class="hero-mid"><h1 class="logo-big">TYPE<br><span>CLASH</span></h1><p>THE <b>FASTER</b> YOU TYPE,<br>THE <b class="b2">STRONGER</b> YOU FIGHT!</p></div>
+            </div>
+            <div class="cta">
+              <button id="h-quick" class="cta-main"><span class="ci">⚡</span><div><b>QUICK FIGHT</b><small id="h-quick-sub">Jump into a battle</small></div></button>
+              <button id="h-mode" class="cta-alt"><span class="ci">🎯</span><div><b>CHOOSE MODE</b><small>Select your battle mode</small></div></button>
+            </div>
+            <div class="modes-title"><span>BATTLE MODES</span></div>
+            <div id="h-modes" class="modes"></div>
+          </div>
+          <div class="col-r">
+            <div class="hc board"><div class="bd-head"><b>LEADERBOARD</b><button class="link" data-go="leaderboard">VIEW ALL</button></div><div class="bd-tabs"><span class="on">GLOBAL</span><span class="soon">FRIENDS</span><span class="soon">COUNTRY</span></div><ul id="h-board" class="bd-list"></ul></div>
+            <div class="hc feat"><div class="bd-head"><b>FEATURED CHARACTER</b><button class="link" data-go="fighters">VIEW ALL</button></div>
+              <div class="feat-body"><div class="feat-info"><h4 id="f-name"></h4><em id="f-rare"></em><p id="f-desc"></p><small id="f-lock"></small><button id="f-select" class="small-btn">SELECT</button></div><canvas id="f-cv" width="300" height="380"></canvas></div>
+              <div class="feat-nav"><button id="f-prev" aria-label="Previous">‹</button><span id="f-count"></span><button id="f-next" aria-label="Next">›</button></div></div>
+          </div>
+          <div class="hc ach"><div class="bd-head"><b>ACHIEVEMENTS</b><button class="link" data-go="achievements">VIEW ALL</button></div><div id="h-ach" class="ach-row"></div></div>
+          <div class="quote">“ Every keystroke brings you closer to victory. ”</div>
         </div>
       </section>
 
-      <nav class="tabs">
-        <button class="tab active" data-tab="arena">⚔ Arena</button>
-        <button class="tab" data-tab="fighters">🥷 Fighters</button>
-        <button class="tab" data-tab="achievements">🏆 Achievements</button>
-        <button class="tab" data-tab="leaderboard">📊 Leaderboard</button>
-      </nav>
-
-      <section id="arena-panel" class="panel active">
+      <section id="arena-panel" class="panel">
         <div class="game-layout">
           <div class="battle-card">
             <div class="arena-heading"><div><p class="eyebrow">CURRENT MATCH</p><h2 id="stage-title">Training Grounds</h2></div><span id="stage-badge" class="stage-badge">STAGE 01</span></div>
@@ -62,7 +97,6 @@
             <button id="start-btn" class="primary-btn">START FIGHT <span>→</span></button>
             <button id="next-btn" class="primary-btn hidden">NEXT OPPONENT →</button>
             <p id="status-message" class="status-message">Ready when you are. Press Start Fight.</p>
-            <button id="support-btn" class="small-btn support-btn">❤ Support the game (opens sponsor page)</button>
           </aside>
         </div>
         <div class="typing-card">
@@ -85,9 +119,21 @@
         <div class="section-title"><div><p class="eyebrow">GLOBAL RANKINGS</p><h2>Hall of fighters</h2></div><button id="refresh-board" class="small-btn">Refresh</button></div>
         <div class="leaderboard-wrap"><table><thead><tr><th>RANK</th><th>FIGHTER</th><th>LEVEL</th><th>BEST WPM</th><th>WINS</th></tr></thead><tbody id="leaderboard-body"><tr><td colspan="5">Connect Supabase to load global scores. You can still play locally.</td></tr></tbody></table></div>
       </section>
+      <section id="store-panel" class="panel">
+        <div class="section-title"><div><p class="eyebrow">SKINS · TRAILS · EMOTES</p><h2>Store</h2></div></div>
+        <div class="hc soon-card"><span>🛒</span><h3>The store is coming soon</h3><p class="muted">Until then, every 5 cleared levels unlocks a brand new character for free.</p><button class="gold-btn" data-go="fighters">SEE CHARACTERS</button></div>
+      </section>
     </main>
-    <footer>TYPE CLASH <span>·</span> A typing game. Train fairly, fight honorably. <span>·</span> Sponsor pages may open in a new tab to keep the game free.</footer>
+    <footer>TYPE CLASH <span>·</span> A typing game. Train fairly, fight honorably.</footer>
   </div>
+
+  <nav class="bottom-nav mob-only">
+    <button class="tab active" data-tab="home"><i>🏠</i>HOME</button>
+    <button class="tab" data-tab="arena"><i>⚔</i>BATTLE</button>
+    <button class="tab" data-tab="leaderboard"><i>🏆</i>RANKS</button>
+    <button class="tab" data-tab="fighters"><i>👥</i>CHARACTERS</button>
+    <button class="tab" data-tab="store"><i>🛒</i>STORE</button>
+  </nav>
 
   <div id="auth-modal" class="modal hidden"><div class="modal-card"><button id="auth-close" class="close-btn">×</button><p class="eyebrow">SAVE YOUR PROGRESS</p><h2>Join the arena</h2><p class="muted">Create an account to save your level, wins and leaderboard score across devices.</p>
     <form id="auth-form"><label>Email<input id="email" type="email" required placeholder="you@example.com"></label><label>Password<input id="password" type="password" minlength="6" required placeholder="At least 6 characters"></label><label>Fighter name<input id="display-name" maxlength="18" placeholder="Shadow Rookie"></label><div class="auth-buttons"><button type="submit" class="primary-btn" id="signup-btn">Create account</button><button type="button" id="login-btn" class="small-btn">I already have an account</button></div></form><p id="auth-message" class="status-message"></p><button id="signout-btn" class="text-btn hidden">Sign out</button></div></div>

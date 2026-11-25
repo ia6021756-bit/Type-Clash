@@ -157,7 +157,7 @@ function fig(f,st,sc,pp,tv){const p=pp||pose(f),d=f.dir,l=L*sc,px=f.x+f.ox+f.dir
   if(t.length>1){c.beginPath();c.moveTo(t[0][0],t[0][1]);t.forEach(q=>c.lineTo(q[0],q[1]));c.strokeStyle="rgba(255,255,255,.35)";c.lineWidth=lw*.5;c.stroke()}});
  c.restore()}
 function preview(cvs,id){const st=STY[id]||STY.shadow,k=cvs.getContext("2d"),sv={c,L,gy,W,H},w=cvs.width,h=cvs.height;
- c=k;W=w;H=h;L=h*.58;gy=h*.9;c.clearRect(0,0,w,h);const g=c.createRadialGradient(w/2,h*.55,5,w/2,h*.55,h*.7);g.addColorStop(0,"#2a3350");g.addColorStop(1,"#0e121b");c.fillStyle=g;c.fillRect(0,0,w,h);
+ c=k;W=w;H=h;L=h*.58;gy=h*.9;c.clearRect(0,0,w,h);if(!/^(hero-l|hero-r|f-cv)$/.test(cvs.id||"")){const g=c.createRadialGradient(w/2,h*.55,5,w/2,h*.55,h*.7);g.addColorStop(0,"#2a3350");g.addColorStop(1,"#0e121b");c.fillStyle=g;c.fillRect(0,0,w,h)}
  const f=mkF(1);f.x=w/2;fig(f,st,1);({c,L,gy,W,H}=sv)}
 function bgDraw(){const g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,`hsl(${hue+205},40%,5%)`);g.addColorStop(.7,`hsl(${hue+195},32%,15%)`);g.addColorStop(1,`hsl(${hue+195},25%,9%)`);
  c.fillStyle=g;c.fillRect(0,0,W,H);const bw=W*.085,rh=L*.13;

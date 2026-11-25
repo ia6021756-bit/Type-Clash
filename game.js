@@ -46,7 +46,7 @@
   function setupSupabase(){const c=window.APP_CONFIG||{};if(window.supabase&&c.SUPABASE_URL?.startsWith("https://")&&!c.SUPABASE_URL.includes("YOUR-PROJECT")&&c.SUPABASE_ANON_KEY&&!c.SUPABASE_ANON_KEY.includes("YOUR_")){supabase=window.supabase.createClient(c.SUPABASE_URL,c.SUPABASE_ANON_KEY);supabase.auth.getSession().then(({data})=>{if(data.session){user=data.session.user;loadCloud()}});supabase.auth.onAuthStateChange((_e,session)=>{user=session?.user||null;updateAuthUI();if(user)loadCloud()})}}
   function tone(freq=180,duration=.09,type="sine"){if(!soundOn)return;try{sounds.ctx ||= new (window.AudioContext||window.webkitAudioContext)();const o=sounds.ctx.createOscillator(),g=sounds.ctx.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(.07,sounds.ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,sounds.ctx.currentTime+duration);o.connect(g);g.connect(sounds.ctx.destination);o.start();o.stop(sounds.ctx.currentTime+duration)}catch{}}
   function renderProfile(){ $("fighter-name").textContent=state.name; $("level").textContent=state.level; $("xp").textContent=state.xp; $("wins").textContent=`${state.wins} wins`; $("best-wpm").textContent=`Best: ${state.bestWpm} WPM`; {const rk=rankOf(state.level);$("rank-name").textContent=rk.icon+" "+rk.name}if(typeof renderMeta==="function")renderMeta(); $("profile-avatar").textContent=fighters.find(f=>f.id===state.selected)?.emoji||"🥷"; $("xp-fill").style.width=`${state.xp%100}%`; }
-  function setTab(name){document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===name));document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id===`${name}-panel`));if(name==="leaderboard")loadLeaderboard()}
+  function setTab(name){document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===name));document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id===`${name}-panel`));if(name==="leaderboard")loadLeaderboard();if(name==="home"){renderHome();loadHomeBoard()}}
   function renderPrompt(){if(document.body.classList.contains("fighting")){showWord();return}let html="";for(let i=0;i<target.length;i++){let cls=i<typed?(i<typed&&$("typing-input").value[i]===target[i]?"correct":"wrong"):"";if(i===typed)cls+=" current";html+=`<span class="${cls}">${escapeHtml(target[i])}</span>`}$("prompt-text").innerHTML=html;{const pt=$("prompt-text"),cu=pt.querySelector(".current");if(cu)pt.scrollTop=Math.max(0,cu.offsetTop-pt.clientHeight/2)}showWord();$("typing-progress").textContent=`${typed} / ${target.length} characters`}
   function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
   function startFight(){if(running)return;maybeShowAd();running=true;enterFight();playerHP=100;enemyHP=eMax=100;combo=0;power=0;typed=0;correct=0;elapsed=0;{const lv=fightLevel(),inf=Levels.info(lv);target=fightText(lv,0);hitGap=inf.interval;L0=target.length;dmgPerChar=100/(L0*.9);
@@ -97,8 +97,8 @@
   function updateStageUI(){const i=Levels.info(fightLevel());$("stage-title").textContent=i.zone;$("stage-badge").textContent="LEVEL "+String(i.level).padStart(3,"0");$("enemy-name").textContent=i.enemy}
   const ENEMIES=["TRAINING BOT","STREET BRAWLER","NINJA ACOLYTE","IRON MONK","SHADOW LORD","DRAGON KING"];
   function fitFight(){const v=window.visualViewport,vh=v?v.height:innerHeight,vt=v?v.offsetTop:0,w=innerWidth,s=document.documentElement.style;
-    s.setProperty("--vvh",vh+"px");s.setProperty("--vvt",vt+"px");s.setProperty("--ah",Math.round(Math.min(vh,Math.max(280,Math.min(560,w*1.15))))+"px")}
-  function enterFight(){document.body.classList.add("fighting");$("result").classList.add("hidden");window.scrollTo(0,0);fitFight();
+    s.setProperty("--vvh",vh+"px");s.setProperty("--vvt",vt+"px");s.setProperty("--ah",Math.round(Math.min(vh,Math.max(280,Math.min(w>900?vh:560,w*1.15))))+"px")}
+  function enterFight(){if(!document.body.classList.contains("fighting")){const a=document.querySelector(".tab.active");lastTab=(a&&a.dataset.tab)||"home"}setTab("arena");document.body.classList.add("fighting");$("result").classList.add("hidden");window.scrollTo(0,0);fitFight();
     updateStageUI();resetArena();Arena.intro();say("FIGHT!","#ffd24a");Sfx.init();Sfx.musicStart()}
   function showResult(win){$("result-title").textContent=win?"VICTORY":"DEFEAT";$("result-sub").textContent=$("status-message").textContent;
     $("result-btn").textContent=win?"NEXT OPPONENT →":"TRY AGAIN";$("result").classList.remove("hidden")}
@@ -115,7 +115,7 @@
     $("arena").addEventListener("click",()=>{kf();sync()});hint.addEventListener("click",()=>{kf();sync()});
     ti.addEventListener("focus",sync);ti.addEventListener("blur",()=>setTimeout(sync,60));document.addEventListener("visibilitychange",()=>setTimeout(sync,200));setInterval(sync,500)}
   $("result-btn").onclick=startFight;
-  $("exit-btn").onclick=()=>{document.body.classList.remove("fighting");$("result").classList.add("hidden");window.scrollTo(0,0);resetArena()};
+  $("exit-btn").onclick=()=>{document.body.classList.remove("fighting");setTab(lastTab||"home");$("result").classList.add("hidden");window.scrollTo(0,0);resetArena()};
   if(window.visualViewport){const f=()=>document.body.classList.contains("fighting")&&fitFight();visualViewport.addEventListener("resize",f);visualViewport.addEventListener("scroll",f)}
   window.addEventListener("resize",()=>document.body.classList.contains("fighting")&&fitFight());
   updateStageUI();resetArena();
@@ -157,6 +157,7 @@
   function beforeFight(){return{lvl:fightLevel(),m:mode,best:state.bestWpm,rank:rankOf(state.level).idx,chars:state.unlocked.length}}
   function afterFight(win,pre){const wpm=Math.round((correct/5)/(Math.max(1,elapsed)/60)),acc=typed?correct/typed:1,daily=!!(pre.m&&pre.m.type==="daily");
     R={win,lvl:pre.lvl,wpm,acc:Math.round(acc*100),daily,gain:win?lastGain:0,stars:0,note:"",prevBest:pre.best};
+    state.fights=(state.fights||0)+1;if(typed>=12)state.accs=[...(state.accs||[]),R.acc].slice(-20);
     if(typed>=12&&elapsed>=4)state.hist=[...(state.hist||[]),wpm].slice(-12);
     if(win){R.stars=starsFor(pre.lvl,wpm,acc);
       if(!daily){state.stars=state.stars||{};state.stars[pre.lvl]=Math.max(state.stars[pre.lvl]||0,R.stars)}
@@ -180,7 +181,7 @@
   function mkEl(tag,id,cls,html){const e=document.createElement(tag);if(id)e.id=id;if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
   $("start-btn").before(mkEl("div",null,"lvl-row",'<button id="lv-prev" class="lv-arrow">◀</button><button id="lv-label" class="lv-label"></button><button id="lv-next" class="lv-arrow">▶</button>'));
   $("lv-prev").parentNode.after(mkEl("button","char-btn","small-btn daily-btn"));
-  $("support-btn").before(mkEl("button","daily-btn","small-btn daily-btn"),mkEl("button","daily-share","small-btn daily-btn hidden","📤 Share today's result"));
+  $("status-message").after(mkEl("button","daily-btn","small-btn daily-btn"),mkEl("button","daily-share","small-btn daily-btn hidden","📤 Share today's result"));
   document.querySelector(".xp-track").after(mkEl("div","streak-badge","streak"));
   document.querySelector(".result-btns").before(mkEl("div","result-extra","result-extra"));
   $("exit-btn").before(mkEl("button","r-share","small-btn hidden","📤 SHARE"));
@@ -215,10 +216,65 @@
   function renderMeta(){if(!$("lv-label"))return;const l=fightLevel(),n=(state.stars||{})[l]||0;
     $("lv-label").innerHTML=`LEVEL ${l} <span class="lv-st">${starStr(n)}</span>`;$("lv-prev").disabled=l<=1;$("lv-next").disabled=l>=(state.stage||1);
     const d=state.daily,done=d&&d.date===todayStr();$("daily-btn").textContent=done?`✅ Daily done · ${d.wpm} WPM ${starStr(d.stars)}`:"⚡ Daily Challenge · same text for everyone · +40 XP";$("daily-share").classList.toggle("hidden",!done);
-    {const cf=fighters.find(f=>f.id===state.selected);$("char-btn").textContent=`👤 ${cf?cf.name:"Character"} · change`}$("streak-badge").textContent=(state.streak||0)>0?`🔥 ${state.streak}-day streak`:"🔥 Claim your daily reward to start a streak";updateStageUI()}
+    {const cf=fighters.find(f=>f.id===state.selected);$("char-btn").textContent=`👤 ${cf?cf.name:"Character"} · change`}$("streak-badge").textContent=(state.streak||0)>0?`🔥 ${state.streak}-day streak`:"🔥 Claim your daily reward to start a streak";updateStageUI();renderHome()}
   function dailyClaim(){const t=todayStr();if(state.lastDay===t)return;const ns=state.lastDay===dayStr(-1)?(state.streak||0)+1:1,xp=20+Math.min(ns,7)*10+(ns%7===0?100:0);
     modal(`<h2>🔥 Day ${ns}</h2><p>${ns>1?"Your streak continues!":"Your streak starts today!"}${ns%7===0?" 7-day bonus!":""}</p><p class="modal-big">+${xp} XP</p><button id="claim-btn" class="primary-btn">CLAIM</button>`,
       box=>box.querySelector("#claim-btn").onclick=()=>{state.streak=ns;state.bestStreak=Math.max(state.bestStreak||0,ns);state.lastDay=t;addXp(xp);closeModal();toast(`+${xp} XP · ${ns}-day streak 🔥`)})}
+  // ---------- Home dashboard (v10) ----------
+  let lastTab="home",fi=-1,heroKey="",lastDayRendered="";
+  const AP={first:[s=>s.wins,1],speed:[s=>s.bestWpm,40],streak:[s=>s.bestCombo,15],veteran:[s=>s.wins,10],level5:[s=>s.level,5],perfect:[s=>s.perfect,1]};
+  const rar=c=>c<20?["COMMON","#9aa3c7"]:c<50?["RARE","#38d3ff"]:c<80?["EPIC","#a855f7"]:["LEGENDARY","#ffc23e"];
+  const dOff=s=>{if(!s)return -99;const[p,q,r]=s.split("-").map(Number),n=new Date(),t=new Date(n.getFullYear(),n.getMonth(),n.getDate());return Math.round((new Date(p,q-1,r)-t)/864e5)};
+  function quick(){if(!running)startFight()}
+  function doMode(m){if(m==="camp")quick();else if(m==="daily")$("daily-btn").click();else if(m==="lv")$("lv-label").click();else toast("Coming soon! 🚧")}
+  function modeModal(){const lv=fightLevel();modal(`<h2>Choose mode</h2><div class="mode-list">
+    <button data-m="camp"><b>⚔ Campaign</b><small>Level ${lv} · ${Levels.info(lv).zone}</small></button>
+    <button data-m="daily"><b>⚡ Daily Challenge</b><small>Same text for everyone · +40 XP</small></button>
+    <button data-m="lv"><b>🗺 Level select</b><small>Replay any level you have cleared</small></button>
+    <button class="soon" data-m="soon"><b>🏆 Ranked</b><small>Coming soon</small></button>
+    <button class="soon" data-m="soon"><b>🤝 1v1 Room</b><small>Coming soon</small></button></div>`,
+    box=>box.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{closeModal();doMode(b.dataset.m)}))}
+  function menuModal(){modal(`<h2>Menu</h2><div class="mode-list">
+    <button data-g="achievements"><b>🏅 Achievements</b></button><button data-g="leaderboard"><b>📊 Leaderboard</b></button>
+    <button data-g="arena"><b>⚔ Battle setup</b><small>Level picker · daily challenge</small></button>
+    <button data-g="auth"><b>👤 ${user?"Account":"Sign in"}</b><small>Save your progress across devices</small></button></div>`,
+    box=>box.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>{closeModal();if(b.dataset.g==="auth")$("auth-open").click();else setTab(b.dataset.g)}))}
+  function renderFeat(){if(fi<0){fi=fighters.findIndex(f=>!state.unlocked.includes(f.id));if(fi<0)fi=0}
+    const f=fighters[fi],un=state.unlocked.includes(f.id),sel=state.selected===f.id,[rn,rc]=rar(f.clear);
+    $("f-name").textContent=f.name.toUpperCase();$("f-rare").textContent=rn;$("f-rare").style.color=rc;$("f-desc").textContent=f.style;
+    $("f-lock").textContent=un?"UNLOCKED":`Clear level ${f.clear} to unlock`;const b=$("f-select");b.disabled=!un||sel;b.textContent=sel?"SELECTED":un?"SELECT":"LOCKED";
+    $("f-cv").classList.toggle("locked",!un);Arena.preview($("f-cv"),f.id);$("f-count").textContent=`${fi+1} / ${fighters.length}`}
+  function renderHome(){const hp=$("home-panel");if(!hp||!hp.classList.contains("active")||!$("h-wpm"))return;
+    const t=todayStr(),fights=Math.max(state.fights||0,state.wins),accs=state.accs||[],claimed=state.lastDay===t,last=claimed?0:dOff(state.lastDay),st=last>=-1?(state.streak||0):0,lv=fightLevel(),inf=Levels.info(lv);
+    lastDayRendered=t;$("h-wpm").textContent=state.bestWpm;$("h-acc").textContent=accs.length?Math.round(accs.reduce((a,b)=>a+b,0)/accs.length)+"%":"–";
+    $("h-wins").textContent=state.wins;$("h-rate").textContent=fights?Math.round(state.wins/fights*100)+"%":"–";
+    $("h-streak").textContent=st+(st===1?" DAY":" DAYS");$("h-streak-msg").textContent=claimed?"Keep it up!":"Claim today's reward!";
+    let wk="";for(let o=-6;o<=0;o++){const d=new Date(Date.now()+o*864e5),done=st>0&&o<=last&&o>last-st;wk+=`<span class="${done?"done":""}${o===0?" today":""}"><i>${done?"✓":o===0&&!claimed?"🎁":""}</i><em>${"SMTWTFS"[d.getDay()]}</em></span>`}
+    $("h-week").innerHTML=wk;$("h-claim").disabled=claimed;$("h-claim").textContent=claimed?"CLAIMED ✓":"CLAIM REWARD";$("bell-btn").classList.toggle("has",!claimed);
+    const em=(fighters.find(f=>f.id===state.selected)||{}).emoji||"🥷";$("chip-avatar").textContent=em;$("chip-name").textContent=state.name;$("chip-level").textContent=state.level;$("chip-fill").style.width=`${state.xp%100}%`;
+    $("h-quick-sub").textContent=`Level ${lv} · ${inf.zone}`;
+    const d=state.daily,done=d&&d.date===t;
+    $("h-modes").innerHTML=[["camp","⚔","CAMPAIGN",`Level ${lv}`],["daily","⚡","DAILY",done?`✓ ${d.wpm} WPM`:"+40 XP bonus"],["lv","🗺","LEVELS","Replay & stars"],["soon","🏆","RANKED","Coming soon",1],["soon","🤝","1v1 ROOM","Coming soon",1]]
+      .map(m=>`<button class="mode${m[4]?" soon":""}" data-m="${m[0]}"><i>${m[1]}</i><b>${m[2]}</b><small>${m[3]}</small></button>`).join("");
+    $("h-ach").innerHTML=achievements.slice(0,5).map(a=>{const[fn,goal]=AP[a.id]||[()=>0,1],cur=Math.min(goal,fn(state)),ok=state.achievements.includes(a.id);
+      return `<div class="ac"><span class="ai">${a.emoji}</span><div><b>${a.name}</b><small>${a.desc}</small><div class="ab"><i style="width:${cur/goal*100}%"></i></div><em class="${ok?"ok":""}">${ok?"✓ COMPLETED":cur+" / "+goal}</em></div></div>`}).join("");
+    const key=state.selected+"|"+enemyId(lv);if(key!==heroKey){heroKey=key;Arena.preview($("hero-l"),state.selected);Arena.preview($("hero-r"),enemyId(lv))}
+    renderFeat()}
+  async function loadHomeBoard(){const ul=$("h-board");if(!ul)return;const em=(fighters.find(f=>f.id===state.selected)||{}).emoji||"🥷";
+    const me=`<li class="me"><span class="rk">–</span><span class="ra">${em}</span><b>${escapeHtml(state.name)}</b><em>${state.bestWpm} WPM</em></li>`;
+    if(!supabase){ul.innerHTML='<li class="note">Global rankings open soon. Your best so far:</li>'+me;return}
+    try{const{data,error}=await supabase.from("player_profiles").select("display_name,best_wpm").order("best_wpm",{ascending:false}).limit(4);if(error)throw error;
+      ul.innerHTML=(data||[]).map((p,i)=>`<li><span class="rk r${i+1}">${i+1}</span><span class="ra">🥷</span><b>${escapeHtml(p.display_name||"Fighter")}</b><em>${p.best_wpm} WPM</em></li>`).join("")+me}
+    catch(e){ul.innerHTML='<li class="note">Rankings are unavailable right now.</li>'+me}}
+  $("h-quick").onclick=quick;$("h-mode").onclick=modeModal;$("menu-btn").onclick=menuModal;$("h-claim").onclick=dailyClaim;
+  $("bell-btn").onclick=()=>{if(state.lastDay===todayStr())toast("No new rewards right now 🎁");else dailyClaim()};
+  $("h-modes").onclick=e=>{const b=e.target.closest("[data-m]");if(b)doMode(b.dataset.m)};
+  document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>setTab(b.dataset.go));
+  $("f-prev").onclick=()=>{fi=(fi+fighters.length-1)%fighters.length;renderFeat()};$("f-next").onclick=()=>{fi=(fi+1)%fighters.length;renderFeat()};
+  $("f-select").onclick=()=>{const b=document.querySelector(`[data-fighter="${fighters[fi].id}"]`);if(b&&!b.disabled)b.click()};
+  setInterval(()=>{const e=$("h-reset");if(!e)return;const n=new Date(),m=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1),s=Math.max(0,Math.floor((m-n)/1000));
+    e.textContent=[s/3600|0,(s/60)%60|0,s%60].map(pad2).join(":");if(todayStr()!==lastDayRendered)renderHome()},1000);
+  loadHomeBoard();
   setTimeout(dailyClaim,900);
   unlockFighters();
   setupSupportButton();renderProfile();renderFighters();renderAchievements();updateBattle();updateAuthUI();setupSupabase();
