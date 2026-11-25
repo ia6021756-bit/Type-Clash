@@ -58,7 +58,7 @@
   function attack(sp){Arena.attack(sp);const t=$("impact-text");t.textContent=sp?"ULTIMATE!":combo>=10?"MEGA HIT!":"HIT!";t.classList.remove("show");void t.offsetWidth;t.classList.add("show")}
   function onType(){if(!running)return;const value=$("typing-input").value,prev=typed;typed=value.length;correct=0;combo=0;
     for(let i=0;i<Math.min(value.length,target.length);i++){if(value[i]===target[i]){correct++;combo++}else combo=0}
-    state.bestCombo=Math.max(state.bestCombo,combo);
+    state.bestCombo=Math.max(state.bestCombo,combo);Arena.setAura(combo>=15);
     $("accuracy").textContent=Math.round((typed?correct/typed:1)*100)+"%";$("wpm").textContent=elapsed>0?Math.round((correct/5)/(elapsed/60)):0;
     let hitAny=false,missed=false;
     for(let i=prev;i<typed;i++){
@@ -99,7 +99,7 @@
   function fitFight(){const v=window.visualViewport,vh=v?v.height:innerHeight,vt=v?v.offsetTop:0,w=innerWidth,s=document.documentElement.style;
     s.setProperty("--vvh",vh+"px");s.setProperty("--vvt",vt+"px");s.setProperty("--ah",Math.round(Math.min(vh,Math.max(280,Math.min(560,w*1.15))))+"px")}
   function enterFight(){document.body.classList.add("fighting");$("result").classList.add("hidden");window.scrollTo(0,0);fitFight();
-    updateStageUI();resetArena();Sfx.init();Sfx.musicStart()}
+    updateStageUI();resetArena();Arena.intro();say("FIGHT!","#ffd24a");Sfx.init();Sfx.musicStart()}
   function showResult(win){$("result-title").textContent=win?"VICTORY":"DEFEAT";$("result-sub").textContent=$("status-message").textContent;
     $("result-btn").textContent=win?"NEXT OPPONENT →":"TRY AGAIN";$("result").classList.remove("hidden")}
   function endFight(win){const pre=beforeFight();endFightCore(win);afterFight(win,pre);updateStageUI();Arena.word(null);if(win)enemyHP=0;updateBattle();Arena.end(win);Sfx.musicStop();win?Sfx.win():Sfx.ko();setTimeout(()=>showResult(win),1700)}
@@ -121,7 +121,7 @@
   updateStageUI();resetArena();
   // ---------- Combat v7: health race, speed-based attacks, line specials ----------
   let pool=0,L0=100,dmgPerChar=1,lineEnds=[],li=0,paraN=0,stamps=[],pendingSp=null,spIdx=0;
-  const SPID=["epunch","choke","flip","throw"],SPN=["ENERGY PUNCH!","CHOKEHOLD!","BACKFLIP KICK!","SLAM!"];
+  const SPID=["beam","flurry","dive","smash","flip","choke","throw"],SPN=["ENERGY BEAM!","LIGHTNING FLURRY!","FLYING KICK!","GROUND SMASH!","BACKFLIP KICK!","CHOKEHOLD!","SLAM!"];
   function computeLines(text,off){const out=[],re=/\S+/g;let m,c=0,last=0;
     while((m=re.exec(text))){c++;last=m.index+m[0].length;if((/[.!?]["']?$/.test(m[0])&&c>=3)||c>=8){out.push(off+last);c=0}}
     if(c>=3)out.push(off+last);return out}
@@ -130,9 +130,9 @@
   function tempoNow(){return Math.max(.9,Math.min(2.2,.9+liveWpm()/45))}
   function say(t,col){const e=$("impact-text");e.textContent=t;e.style.color=col||"";e.classList.remove("show");void e.offsetWidth;e.classList.add("show")}
   function fireLine(value){const ls=li>0?lineEnds[li-1]:0,le=lineEnds[li];let ok=0;for(let k=ls;k<le;k++)if(value[k]===target[k])ok++;
-    const idx=li%4;li++;if(ok/Math.max(1,le-ls)>=.85){spIdx=idx;if(!Arena.special(SPID[idx]))pendingSp=idx}else say("SLOPPY LINE!","#ff9aa8")}
+    const idx=li%SPID.length;li++;if(ok/Math.max(1,le-ls)>=.85){spIdx=idx;if(!Arena.special(SPID[idx]))pendingSp=idx}else say("SLOPPY LINE!","#ff9aa8")}
   Arena.onHit=(who,kind,bl,mag)=>{if(!running)return;
-    if(who==="p"){let d=pool;pool=0;if(kind==="S")d+=eMax*.1*mag;else if(kind==="c")d+=eMax*.03;if(bl)d*=(bl==="d"?.45:.35);
+    if(who==="p"){let d=pool;pool=0;if(kind==="S")d+=eMax*.06*mag;else if(kind==="c")d+=eMax*.018*mag;if(bl)d*=(bl==="d"?.45:.35);
       enemyHP=Math.max(0,enemyHP-d);updateBattle();say(kind==="S"?SPN[spIdx]:`-${Math.round(d)}`,kind==="S"?"#ffd24a":"");if(enemyHP<=0)endFight(true)}
     else{const d=enemyDmg*(bl?.35:1)*(kind==="h"?1.5:1);playerHP=Math.max(0,playerHP-d);updateBattle();say(`-${Math.round(d)}`,"#ff5c75");if(playerHP<=0)endFight(false)}};
   // ---------- Characters (v8) ----------
