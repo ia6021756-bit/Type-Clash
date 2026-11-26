@@ -196,3 +196,20 @@ h1,h2,h3,h4,.section-title h2{font-family:'DM Sans',system-ui,sans-serif;letter-
 body{font-family:'DM Sans',system-ui,sans-serif}
 .fighter-grid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))!important;gap:14px}
 @media(max-width:860px){.fighter-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+
+/* ===== v11: layout fixes ===== */
+html,body{overflow-x:hidden}
+.app-shell{max-width:1560px}
+.home-grid{grid-template-columns:minmax(280px,320px) minmax(0,1fr) minmax(320px,380px);align-items:stretch}
+.col-c .hero{flex:1 0 auto}.col-r .feat{flex:1}.feat-body{flex:1}
+.hero-fig{width:40%;height:92%;object-fit:contain;object-position:center bottom;aspect-ratio:auto}
+@media(max-width:1180px) and (min-width:861px){
+ .brand small{display:none}.top-nav{margin-left:0}.top-nav .tab{padding:26px 7px;font-size:11px;letter-spacing:.03em}
+ .chip>div{display:none}.chip{padding:5px}.top-actions{gap:6px}.top-actions .small-btn{padding:8px 10px}}
+@media(max-width:1060px){.col-c .hero,.col-r .feat{flex:none}.hero{min-height:300px}}
+
+.hero-fig{width:50%}
+@media(min-width:1061px){.hero-mid{transform:translateY(-14%)}}
+
+.hero-fig{width:46%}
+@media(min-width:1061px){.hero-mid{transform:translateY(-22%)}}

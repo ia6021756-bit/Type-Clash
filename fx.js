@@ -20,7 +20,10 @@ function step(s32,t){const s=s32%16,r=roots[Math.floor(s32/8)%4];
  if(s%2===0)o(mu,t,"sawtooth",mf(r),mf(r)*.99,.2,.45);
  o(mu,t,"square",mf(r+24+arp[s32%8]),mf(r+24+arp[s32%8])*.99,.09,.1)}
 function sched(){while(nt<ctx.currentTime+.2){step(st,nt);nt+=60/140/4;st=(st+1)%32}}
-return{init,
+function halt(){if(!ctx)return;clearInterval(timer);try{ctx.suspend()}catch(e){}}
+function wake(){if(!ctx)return;try{ctx.resume()}catch(e){}if(playing){clearInterval(timer);nt=ctx.currentTime+.05;timer=setInterval(sched,40)}}
+document.addEventListener("visibilitychange",()=>document.hidden?halt():wake());window.addEventListener("pagehide",halt);window.addEventListener("pageshow",()=>{if(!document.hidden)wake()});
+return{state:()=>ctx?ctx.state:"none",init,
  setSfx(b){on=b;if(sg)sg.gain.value=b?1:0},setMusic(b){mOn=b;if(mu)mu.gain.value=b?.2:0},
  musicStart(){if(!ctx||playing)return;playing=true;nt=ctx.currentTime+.05;st=0;timer=setInterval(sched,40)},
  musicStop(){playing=false;clearInterval(timer)},
