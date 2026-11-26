@@ -213,3 +213,5 @@ html,body{overflow-x:hidden}
 
 .hero-fig{width:46%}
 @media(min-width:1061px){.hero-mid{transform:translateY(-22%)}}
+
+.modal-card h2,.modal-box h2{font-family:'DM Sans',system-ui,sans-serif}
